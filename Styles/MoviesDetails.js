@@ -2,17 +2,14 @@ import { StyleSheet } from "react-native";
 export default StyleSheet.create({
     container: {
         borderBottomWidth: 0,
-        borderBottomLeftRadius: 0,
-        borderBottomRightRadius: 0
-
-
+        // borderBottomLeftRadius: 0,
+        // borderBottomRightRadius: 0,
+        // padding: 20
     },
     detailsContainer: {
         width: "95%",
         marginHorizontal: "auto",
         marginVertical: 10,
-
-
     },
     detailsItem: {
         // backgroundColor: "teal",

@@ -7,7 +7,7 @@ export default StyleSheet.create({
         flexDirection: "row",
         justifyContent: "space-between",
         alignItems: "center",
-        gap:2
+        gap: 2,
     }, search: {
         borderColor: "#333",
         borderWidth: 1,
@@ -23,7 +23,6 @@ export default StyleSheet.create({
     }, filterdrop: {
         textAlign: "center",
         color: "red",
-
     }
 
 
