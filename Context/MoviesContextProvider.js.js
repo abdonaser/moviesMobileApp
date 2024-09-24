@@ -30,7 +30,6 @@ const MoviesContextProvider = ({ children }) => {
 
 
     useEffect(() => {
-
         dispatchAllMovies({ type: "getAllMovies", payload: data })
     }, [data]);
 
@@ -59,7 +58,14 @@ const MoviesContextProvider = ({ children }) => {
     // { allMovies, dispatchAllMovies, allMoviesLoading, allMoviesError }
 
     return (
-        <moviesContext.Provider value={{ allMovies, dispatchAllMovies, allMoviesLoading, allMoviesError}}>
+        <moviesContext.Provider value={
+            {
+                allMovies,
+                dispatchAllMovies,
+                allMoviesLoading,
+                allMoviesError
+            }
+        }>
             {children}
         </moviesContext.Provider>
 

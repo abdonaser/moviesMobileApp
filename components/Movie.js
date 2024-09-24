@@ -4,41 +4,72 @@ import movie from "../Styles/MovieStye";
 import Icon from "react-native-vector-icons/MaterialCommunityIcons";
 import { moviesContext } from "../Context/MoviesContextProvider.js";
 import { useDispatch, useSelector } from "react-redux";
-import { deleteFavMovie, puchFavMovie } from "../Redux/Slices/FavMoviesSlice.js";
+import { deleteFavMovie, getAllFavFromFb_Action, puchFavMovie } from "../Redux/Slices/FavMoviesSlice.js";
 import { useNavigation } from "@react-navigation/native";
 import Routes from "../Utils/MyRoutes.js";
+import { ActivityIndicator, MD2Colors, useTheme } from "react-native-paper";
 
 
-const Movie = ({ title, movieImgSrc, id }) => {
+
+const Movie = ({ title, movieImgSrc, id, isGuest }) => {
+    //!Use  ====================================
+    const { colors } = useTheme();
     const { navigate } = useNavigation();
+    const dispatch = useDispatch()
+
+    //! states  ====================================
+    // const FavIsloading = useSelector((state) => state.allFavMoviesStore.FavIsloading);
     const favMovies = useSelector(
         (state) => state.allFavMoviesStore.allFavMovies
     );
-    const displispatch = useDispatch()
-    const { allMovies, allMoviesLoading, allMoviesError, dispatchAllMovies } =
-        useContext(moviesContext);
-    const handelFavorite = (movieId) => {
-        if (favMovies.find((obj) => obj.id === +movieId)) {
-            const movieSelected = allMovies.results.find((obj) => {
-                return obj.id === +id;
-            });
-            displispatch(deleteFavMovie(movieSelected));
-        } else {
+    const { allMovies } = useContext(moviesContext);
 
-            const movieSelected = allMovies.results.find((obj) => {
-                return obj.id === +id;
-            });
-            displispatch(puchFavMovie(movieSelected));
+    const [handelFavoriteLoading, setHandelFavoriteLoading] = useState(false);
+
+    // ! Functions  ====================================
+    const handelFavorite = async (movieId) => {
+        if (isGuest) {
+            alert("please sign in")
+        } else {
+            // console.log("====================================ascc");
+            setHandelFavoriteLoading(true)
+            // console.log("looodingStart ,", handelFavoriteLoading);
+
+            const movieSelected = allMovies.results.find((obj) => obj.id === +id);
+            const moviepressed_Fb_Id = favMovies?.find((obj) => obj.id === +movieId)
+
+            try {
+                if (moviepressed_Fb_Id) {
+                    // console.log('Movies/deleteFavMovie > ');
+                    await dispatch(deleteFavMovie(moviepressed_Fb_Id.movieId));//'to delet the movie From the cloud fireStore
+
+                } else {
+                    // console.log("'Movies/puchFavMovie' From Movies  => ");
+                    await dispatch(puchFavMovie(movieSelected)); //'to add the movie to the cloud fireStore
+
+                }
+
+                await dispatch(getAllFavFromFb_Action()); //'to handel the fav icon and update favorites List 
+
+            } catch (error) {
+                console.error('Error handling favorite movie:', error);
+            } finally {
+                setHandelFavoriteLoading(false); // Stop loading
+                // console.log("looodingFinished ,", handelFavoriteLoading); // At this point, it will be false
+            }
         }
     };
 
 
+
     return (
-        <View style={movie.movieCard}>
+        <View style={[movie.movieCard]}>
             <View style={movie.movieCover}>
-                <Pressable onPress={() => navigate(Routes.movieDetails, { id: id })}
+                <Pressable onPress={
+                    () => isGuest ? alert("please sign in") : navigate(Routes.movieDetails, { id: id })
+                }
                     style={
-                        ({ pressed }) => [styles.TouchableBtn, { opacity: pressed ? 0.2 : 1 }]
+                        [movie.movieCoverPress, ({ pressed }) => [{ opacity: pressed ? 0.2 : 1 }]]
                     }
                 >
                     <Image
@@ -49,21 +80,30 @@ const Movie = ({ title, movieImgSrc, id }) => {
                                 }`,
                         }}
 
-                        style={{ width: "100%", height: "100%" }}
-                        resizeMode="cover"
+                        style={movie.movieCoverImg}
                     />
                 </Pressable>
             </View>
             <View style={movie.movieTitle}>
                 <Text style={movie.movieTitleTXT}>{title ? title : "notFound"}</Text>
                 <Text>
-                    <Icon
-                        name="cards-heart"
-                        size={20}
-                        color={favMovies.find((favobj) => favobj.id === id) ? "red" : "#fff"}
-                        onPress={() => {
-                            handelFavorite(id);
-                        }}></Icon>
+                    {handelFavoriteLoading ?
+                        <ActivityIndicator
+                            animating={true}
+                            color={MD2Colors.black}
+                        />
+                        :
+                        <Icon
+                            name="cards-heart"
+                            size={20}
+                            color={favMovies?.find((favobj) => favobj.id === id) ? "red" : "#fff"}
+                            onPress={() => {
+                                handelFavorite(id);
+                            }}
+                        >
+                        </Icon>
+                    }
+
                 </Text>
             </View>
         </View >

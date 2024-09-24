@@ -5,16 +5,18 @@ import Icon from "react-native-vector-icons/MaterialCommunityIcons";
 import movie from "../Styles/MovieStye";
 import details from "../Styles/MoviesDetails.js";
 import { useDispatch, useSelector } from 'react-redux';
-import { deleteFavMovie, puchFavMovie } from '../Redux/Slices/FavMoviesSlice';
+import { deleteFavMovie, getAllFavFromFb_Action, puchFavMovie } from '../Redux/Slices/FavMoviesSlice';
 import { moviesContext } from '../Context/MoviesContextProvider.js';
 import NotFound from '../components/NotFound.js';
-import { ActivityIndicator, MD2Colors } from 'react-native-paper';
+import { ActivityIndicator, MD2Colors, useTheme } from 'react-native-paper';
 
 const MovieDetails = () => {
+    const { colors } = useTheme();
     const { params: { id } } = useRoute()
-
+    const dispatch = useDispatch()
     const [moviesDetails, setMoviesDetails] = useState({});
     const [moviesDetailsLoading, setMoviesDetailsLoading] = useState(true);
+    const [handelFavoriteLoading, setHandelFavoriteLoading] = useState(false);
 
     const { allMovies, allMoviesLoading, allMoviesError, dispatchAllMovies } =
         useContext(moviesContext);
@@ -22,15 +24,16 @@ const MovieDetails = () => {
         (state) => state.allFavMoviesStore.allFavMovies
     );
 
-    const options = {
-        method: 'GET',
-        headers: {
-            accept: 'application/json',
-            Authorization: 'Bearer eyJhbGciOiJIUzI1NiJ9.eyJhdWQiOiI5ZTRlZjhmNTAzM2FhYTBiM2Y2ODdkM2MxY2Q2OWExNCIsIm5iZiI6MTcyMzc5NjUzNS4zMjY2MTUsInN1YiI6IjY1MWE3ZDMwZDg2MWFmMDBhZTMyMDZiNiIsInNjb3BlcyI6WyJhcGlfcmVhZCJdLCJ2ZXJzaW9uIjoxfQ.q6xg2jcA6Qe2KVkOt5l950rfks43jMNXBp6J0aSyJvs'
-        }
-    };
+
 
     useEffect(() => {
+        const options = {
+            method: 'GET',
+            headers: {
+                accept: 'application/json',
+                Authorization: 'Bearer eyJhbGciOiJIUzI1NiJ9.eyJhdWQiOiI5ZTRlZjhmNTAzM2FhYTBiM2Y2ODdkM2MxY2Q2OWExNCIsIm5iZiI6MTcyMzc5NjUzNS4zMjY2MTUsInN1YiI6IjY1MWE3ZDMwZDg2MWFmMDBhZTMyMDZiNiIsInNjb3BlcyI6WyJhcGlfcmVhZCJdLCJ2ZXJzaW9uIjoxfQ.q6xg2jcA6Qe2KVkOt5l950rfks43jMNXBp6J0aSyJvs'
+            }
+        };
         fetch(`https://api.themoviedb.org/3/movie/${id}?language=en-US`, options)
             .then(response => {
                 setMoviesDetailsLoading(true)
@@ -40,26 +43,40 @@ const MovieDetails = () => {
             .then(response => {
                 setMoviesDetailsLoading(false)
                 setMoviesDetails(response)
+
             })
             .catch(err => console.error(err));
     }, []);
 
 
-    const displispatch = useDispatch()
-    const handelFavorite = (movieId) => {
-        if (favMovies.find((obj) => obj.id === +movieId)) {
-            const movieSelected = allMovies.results.find((obj) => {
-                return obj.id === +id;
-            });
-            displispatch(deleteFavMovie(movieSelected));
-        } else {
-            const movieSelected = allMovies.results.find((obj) => {
-                return obj.id === +id;
-            });
-            displispatch(puchFavMovie(movieSelected));
+
+
+
+    // ! Functions  ====================================
+    const handelFavorite = async (movieId) => {
+        setHandelFavoriteLoading(true); // Start loading
+
+        const movieSelected = allMovies.results.find((obj) => obj.id === +movieId);
+        const moviepressed_Fb_Id = favMovies?.find((obj) => obj.id === +movieId);
+
+        try {
+            if (moviepressed_Fb_Id) {
+                console.log('Movies/deleteFavMovie > Deleting favorite movie');
+                await dispatch(deleteFavMovie(moviepressed_Fb_Id.movieId)); // Delete the movie from Firestore
+                console.log('Favorite movie deleted');
+            } else {
+                console.log("'Movies/puchFavMovie' > Adding favorite movie");
+                await dispatch(puchFavMovie(movieSelected)); // Add the movie to Firestore
+                console.log('Favorite movie added');
+            }
+            // After either adding or deleting, update the favorites list
+            await dispatch(getAllFavFromFb_Action());
+        } catch (error) {
+            console.error('Error handling favorite movie:', error);
+        } finally {
+            setHandelFavoriteLoading(false); // Stop loading after operation
         }
     };
-
 
     if (moviesDetailsLoading) {
         return <ActivityIndicator
@@ -68,13 +85,16 @@ const MovieDetails = () => {
             style={{ marginTop: 350 }}
         />;
     }
+
     if (!moviesDetails) {
         return <NotFound />;
     }
+
     return (
         <>
-            <ScrollView>
+            <ScrollView style={{ backgroundColor: colors.background }}>
                 <View style={[movie.movieCard, details.container]}>
+
                     <View style={movie.movieCover}>
                         <Image
                             source={{
@@ -88,6 +108,7 @@ const MovieDetails = () => {
                             style={{ width: "100%", height: "100%", objectFit: "fill" }}>
                         </Image>
                     </View>
+
                     <View style={movie.movieTitle}>
                         <Text style={movie.movieTitleTXT}>
                             {moviesDetails.title ?
@@ -97,14 +118,22 @@ const MovieDetails = () => {
                             }
                         </Text>
                         <Text>
-                            <Icon
-                                name="cards-heart"
-                                size={20}
-                                color={favMovies.find((favobj) => favobj.id === id) ? "red" : "#fff"}
-                                onPress={() => {
-                                    handelFavorite(id);
-                                }}>
-                            </Icon>
+                            {handelFavoriteLoading ?
+                                <ActivityIndicator
+                                    animating={true}
+                                    color={MD2Colors.black}
+                                />
+                                :
+                                <Icon
+                                    name="cards-heart"
+                                    size={20}
+                                    color={favMovies?.find((favobj) => favobj.id === id) ? "red" : "#fff"}
+                                    onPress={() => {
+                                        handelFavorite(id);
+                                    }}
+                                >
+                                </Icon>
+                            }
                         </Text>
                     </View>
 
@@ -141,15 +170,11 @@ const MovieDetails = () => {
                                 {moviesDetails.vote_count}
                             </Text>
                         </View>
-
                     </View>
-                </View >
 
+                </View >
             </ScrollView>
         </>
     );
 }
-
-
-
 export default MovieDetails;

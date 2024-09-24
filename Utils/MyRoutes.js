@@ -3,6 +3,8 @@ const Routes = Object.freeze({
     home: "Home",
     favorites: "Favorites",
     movieDetails: "MovieDetails",
-    drawer: "drawer ",
+    drawer: "drawer",
+    SignIn: "SignIn",
+    SignUp: "SignUp ",
 })
 export default Routes

@@ -1,5 +1,12 @@
 import { StyleSheet } from "react-native";
 export default StyleSheet.create({
+    welcomeText: {
+        paddingHorizontal: 15,
+        // paddingVertical: 5,
+        fontSize: 20,
+        fontWeight: 'bold',
+    },
+
     boxContainer: {
         width: "100%",
         padding: 4,
