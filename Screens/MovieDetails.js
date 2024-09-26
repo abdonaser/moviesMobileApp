@@ -65,9 +65,9 @@ const MovieDetails = () => {
                 await dispatch(deleteFavMovie(moviepressed_Fb_Id.movieId)); // Delete the movie from Firestore
                 console.log('Favorite movie deleted');
             } else {
-                console.log("'Movies/puchFavMovie' > Adding favorite movie");
+                // console.log("'Movies/puchFavMovie' > Adding favorite movie");
                 await dispatch(puchFavMovie(movieSelected)); // Add the movie to Firestore
-                console.log('Favorite movie added');
+                // console.log('Favorite movie added');
             }
             // After either adding or deleting, update the favorites list
             await dispatch(getAllFavFromFb_Action());

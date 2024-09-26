@@ -69,6 +69,9 @@ export default function App() {
       background: '#ffffff',
       text: '#000000',
       appName: '#000000',
+      badgeBgc: "#0096FF",
+      badgeText: "black",
+      searchBarBg: "#fff"
     },
   };
   const customDarkTheme = {
@@ -80,6 +83,9 @@ export default function App() {
       background: '#121212',
       text: '#ffffff',
       appName: '#0096FF',
+      badgeBgc: "red",
+      badgeText: "black",
+      searchBarBg: "#493545"
     },
   };
 

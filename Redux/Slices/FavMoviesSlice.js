@@ -49,8 +49,8 @@ const FavMoviesSlice = createSlice({
         builder.addCase(
             getAllFavFromFb_Action.fulfilled, (state, action) => {
                 // console.log("state.allFavMovies -=> "  , state.allFavMovies);
-                
                 state.allFavMovies = action.payload
+                state.favMovieslength = action.payload.length
                 state.FavIsloading = false
                 state.FavIsError = false
             }
@@ -89,7 +89,7 @@ const addFavToFb = async (favMoviesFb) => {
 const DeleteFavFromFb = async (movieId) => {
     try {
         //' create reference to the movie i want to delete
-        const movieRef = doc(db,"favoriteMovies", movieId)
+        const movieRef = doc(db, "favoriteMovies", movieId)
         //' deletethe movie
         await deleteDoc(movieRef)
         // console.log("delete success", movieId);

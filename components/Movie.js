@@ -29,7 +29,7 @@ const Movie = ({ title, movieImgSrc, id, isGuest }) => {
     // ! Functions  ====================================
     const handelFavorite = async (movieId) => {
         if (isGuest) {
-            alert("please sign in")
+            alert("Please SignIn First To Can Update Your Favorites ")
         } else {
             // console.log("====================================ascc");
             setHandelFavoriteLoading(true)
@@ -66,7 +66,7 @@ const Movie = ({ title, movieImgSrc, id, isGuest }) => {
         <View style={[movie.movieCard]}>
             <View style={movie.movieCover}>
                 <Pressable onPress={
-                    () => isGuest ? alert("please sign in") : navigate(Routes.movieDetails, { id: id })
+                    () => isGuest ? alert("please signIn First To Display The Details") : navigate(Routes.movieDetails, { id: id })
                 }
                     style={
                         [movie.movieCoverPress, ({ pressed }) => [{ opacity: pressed ? 0.2 : 1 }]]

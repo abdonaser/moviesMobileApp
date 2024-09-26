@@ -124,7 +124,7 @@ const styles = StyleSheet.create({
     deleteButtonContainer: {
         // backgroundColor:"teal",
         position: 'absolute',
-        bottom: 0,
+        bottom:5,
         right: 20,
         left: 20,
         zIndex: 9999,
