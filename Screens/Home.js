@@ -2,6 +2,7 @@ import React, { useContext, useEffect, useState } from "react";
 import { Text, FlatList, ScrollView, View, TouchableOpacity, LogBox } from "react-native";
 import mainStyle from "../Styles/mainStyle.js";
 import { moviesContext } from "../Context/MoviesContextProvider.js.js";
+
 import {
     Avatar,
     Card,
@@ -9,6 +10,7 @@ import {
     ActivityIndicator,
     MD2Colors, Searchbar
 } from "react-native-paper";
+
 import Movie from "../components/Movie.js";
 
 import { Dropdown } from 'react-native-paper-dropdown';
@@ -19,11 +21,14 @@ const Home = () => {
 
     const { allMovies, allMoviesLoading, allMoviesError, dispatchAllMovies } =
         useContext(moviesContext);
+        
     const [filterMovies, setFilterMovies] = useState([]);
 
-    useEffect(() => {
-        setFilterMovies(allMovies?.results)
-    }, [allMovies]);
+    useEffect(
+        () => {
+            setFilterMovies(allMovies?.results)
+        }
+        , [allMovies]);
 
     //! search==============================================
     const [searchQuery, setSearchQuery] = useState("");
@@ -49,6 +54,7 @@ const Home = () => {
     //! search==============================================
 
     //! Filtration==============================================
+
     const [filterilterOptions, setFilterOptions] = useState();
 
     const OPTIONS = [
@@ -80,7 +86,6 @@ const Home = () => {
 
     }
 
-
     if (allMoviesLoading) {
         return <ActivityIndicator
             animating={true}
@@ -88,9 +93,11 @@ const Home = () => {
             style={{ marginTop: 350 }}
         />;
     }
+
     if (allMoviesError) {
         return <Text>Error: {allMoviesError.message} </Text>;
     }
+
     if (!allMovies) {
         return <ActivityIndicator
             animating={true}
@@ -98,7 +105,9 @@ const Home = () => {
             style={{ marginTop: 350 }}
         />;
     }
+
     return (
+
         <View>
             <View style={mainStyle.boxContainer}>
                 <Searchbar
@@ -124,7 +133,6 @@ const Home = () => {
                 </View>
             </View>
 
-
             <FlatList
                 data={filterMovies}
                 renderItem={({ item }) => {
@@ -134,13 +142,10 @@ const Home = () => {
                             movieImgSrc={item?.poster_path}
                             id={item?.id}
                         >
-
                         </Movie>
                     );
                 }}
-
                 // keyExtractor={({ hexCode }) => hexCode}
-
                 ListEmptyComponent={
                     <NotFound></NotFound>
                 }></FlatList>

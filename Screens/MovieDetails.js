@@ -79,14 +79,23 @@ const MovieDetails = () => {
                         <Image
                             source={{
                                 uri: `${moviesDetails.poster_path
-                                    ? `https://image.tmdb.org/t/p/w500${moviesDetails.poster_path}`
-                                    : "https://images.unsplash.com/photo-1721332149371-fa99da451baa?w=500&auto=format&fit=crop&q=60&ixlib=rb-4.0.3&ixid=M3wxMjA3fDF8MHxmZWF0dXJlZC1waG90b3MtZmVlZHw2fHx8ZW58MHx8fHx8"
+                                    ?
+                                    `https://image.tmdb.org/t/p/w500${moviesDetails.poster_path}`
+                                    :
+                                    "https://images.unsplash.com/photo-1721332149371-fa99da451baa?w=500&auto=format&fit=crop&q=60&ixlib=rb-4.0.3&ixid=M3wxMjA3fDF8MHxmZWF0dXJlZC1waG90b3MtZmVlZHw2fHx8ZW58MHx8fHx8"
                                     }`,
                             }}
-                            style={{ width: "100%", height: "100%", objectFit: "fill" }}></Image>
+                            style={{ width: "100%", height: "100%", objectFit: "fill" }}>
+                        </Image>
                     </View>
                     <View style={movie.movieTitle}>
-                        <Text style={movie.movieTitleTXT}>{moviesDetails.title ? moviesDetails.title : "notFound"}</Text>
+                        <Text style={movie.movieTitleTXT}>
+                            {moviesDetails.title ?
+                                moviesDetails.title
+                                :
+                                "notFound"
+                            }
+                        </Text>
                         <Text>
                             <Icon
                                 name="cards-heart"
@@ -94,7 +103,8 @@ const MovieDetails = () => {
                                 color={favMovies.find((favobj) => favobj.id === id) ? "red" : "#fff"}
                                 onPress={() => {
                                     handelFavorite(id);
-                                }}></Icon>
+                                }}>
+                            </Icon>
                         </Text>
                     </View>
 
